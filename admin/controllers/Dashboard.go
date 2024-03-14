@@ -104,3 +104,56 @@ func (dashboard Dashboard) Edit(w http.ResponseWriter, r *http.Request, params h
 	data["post"] = models.Post{}.Get(params.ByName("id"))
 	view.ExecuteTemplate(w, "index", data)
 }
+
+func (dashboard Dashboard) Update(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	// Güncellenecek gönderiyi veritabanından al.
+	post := models.Post{}.Get(params.ByName("id"))
+
+	// Formdan gelen verileri al.
+	title := r.FormValue("blog-title")
+	slug := slug2.Make(title)
+	description := r.FormValue("blog-desc")
+	categoryID, _ := strconv.Atoi(r.FormValue("blog-category"))
+	content := r.FormValue("blog-content")
+	is_selected := r.FormValue("is_selected")
+
+	var picture_url string
+	if is_selected == "1" {
+		// Yeni bir resim seçilmişse, upload işlemi yapılır.
+		r.ParseMultipartForm(10 << 20)
+		file, header, err := r.FormFile("blog-picture")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		f, err := os.OpenFile("uploads/"+header.Filename, os.O_WRONLY|os.O_CREATE, 666)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		_, err = io.Copy(f, file)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		picture_url = "uploads/" + header.Filename
+		os.Remove(post.Picture_url)
+	} else {
+		// Yeni bir resim seçilmemişse, mevcut resmin URL'si kullan.
+		picture_url = post.Picture_url
+	}
+
+	// Gönderiyi günceller.
+	post.Updates(models.Post{
+		Title:       title,
+		Slug:        slug,
+		CategoryID:  categoryID,
+		Content:     content,
+		Description: description,
+		Picture_url: picture_url,
+	})
+
+	// Kullanıcıyı güncellenmiş gönderinin düzenleme sayfasına yönlendir.
+	http.Redirect(w, r, "/admin/edit/"+params.ByName("id"), http.StatusSeeOther)
+}
