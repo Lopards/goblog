@@ -13,6 +13,7 @@ func Routes() *httprouter.Router {
 	//Blog Post
 	r.GET("/admin", admin.Dashboard{}.Index)
 	r.GET("/admin/yeni-ekle", admin.Dashboard{}.NewItem)
+	r.POST("/admin/add/", admin.Dashboard{}.Add)
 	// serve files
 	r.ServeFiles("/admin/assets/*filepath", http.Dir("admin/assets"))
 	return r
