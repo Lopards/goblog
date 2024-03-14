@@ -17,31 +17,39 @@ import (
 type Dashboard struct{}
 
 func (dashboard Dashboard) Index(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	// Gösterilecek sayfanın HTML şablonunu yükler.
 	view, err := template.ParseFiles(helpers.Include("dashboard/list")...)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	view.ExecuteTemplate(w, "index", nil)
+	// Verileri tutacak bir harita oluşturulur ve bu haritaya tüm gönderiler eklenir.
+	data := make(map[string]interface{})
+	data["posts"] = models.Post{}.GetAll()
+	// HTML şablonunu ve verileri kullanarak sayfayı görüntüler.
+	view.ExecuteTemplate(w, "index", data)
 }
 
-func (dashnoard Dashboard) NewItem(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func (dashboard Dashboard) NewItem(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	// Yeni öğe ekleme sayfasının HTML şablonunu yükler.
 	view, err := template.ParseFiles(helpers.Include("dashboard/add")...)
 
 	if err != nil {
 		fmt.Println(err)
 	}
-
+	// HTML şablonunu görüntüler.
 	view.ExecuteTemplate(w, "index", nil)
 }
 
-func (dashnoard Dashboard) Add(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	title := r.FormValue("blog-title") //formdan gelen verileri almak için
+func (dashboard Dashboard) Add(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	// Formdan gelen verileri alır.
+	title := r.FormValue("blog-title")
 	slug := slug2.Make(title)
 	description := r.FormValue("blog-desc")
 	categoryID, _ := strconv.Atoi(r.FormValue("blog-category"))
 	content := r.FormValue("blog-content")
 
+	// Resim dosyasını işler ve sunucuya kaydeder.
 	r.ParseMultipartForm(10 << 20)
 	file, header, err := r.FormFile("blog-picture")
 	if err != nil {
@@ -60,6 +68,7 @@ func (dashnoard Dashboard) Add(w http.ResponseWriter, r *http.Request, params ht
 		return
 	}
 
+	// Gönderi modeline yeni bir gönderi ekler.
 	models.Post{
 		Title:       title,
 		Slug:        slug,
@@ -69,6 +78,29 @@ func (dashnoard Dashboard) Add(w http.ResponseWriter, r *http.Request, params ht
 		Picture_url: "uploads/" + header.Filename,
 	}.Add()
 
-	http.Redirect(w, r, "/admin", http.StatusSeeOther) // kayit işlemleri bittikten sonra ana sayfaya donmek için bir komut
-	// TODO alert
+	// Kullanıcıyı yönlendirir ve ana sayfaya geri döner.
+	http.Redirect(w, r, "/admin", http.StatusSeeOther)
+	// TODO: Bildirim gösterimi eklenebilir.
+}
+
+func (dashboard Dashboard) Delete(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	// Silinecek gönderiyi alır ve veritabanından siler.
+	post := models.Post{}.Get(params.ByName("id"))
+	post.Delete()
+	// Kullanıcıyı yönlendirir ve ana sayfaya geri döner.
+	http.Redirect(w, r, "/admin", http.StatusSeeOther)
+}
+
+func (dashboard Dashboard) Edit(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	// Düzenlenecek gönderinin HTML şablonunu yükler.
+	view, err := template.ParseFiles(helpers.Include("dashboard/edit")...)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// Düzenlenecek gönderiyi alır ve şablonla birlikte görüntüler.
+	data := make(map[string]interface{})
+	data["post"] = models.Post{}.Get(params.ByName("id"))
+	view.ExecuteTemplate(w, "index", data)
 }
