@@ -92,6 +92,8 @@ func (dashboard Dashboard) Delete(w http.ResponseWriter, r *http.Request, params
 	post := models.Post{}.Get(params.ByName("id"))
 	post.Delete()
 	// Kullanıcıyı yönlendirir ve ana sayfaya geri döner.
+	helpers.SetAlert(w, r, "Kayıt  silindi")
+
 	http.Redirect(w, r, "/admin", http.StatusSeeOther)
 }
 

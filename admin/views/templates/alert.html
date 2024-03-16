@@ -7,7 +7,7 @@
     message: 'What would you like to add?',
     position: 'topCenter',
     theme:'light',
-    color:'blue'
+    color: '{{ if eq .message "Kayıt  silindi" }}red{{ else }}blue{{ end }}'
 });
 </script>
 {{end}}
