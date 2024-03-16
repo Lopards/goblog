@@ -17,6 +17,7 @@ import (
 type Dashboard struct{}
 
 func (dashboard Dashboard) Index(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+
 	// Gösterilecek sayfanın HTML şablonunu yükler.
 	view, err := template.ParseFiles(helpers.Include("dashboard/list")...)
 	if err != nil {
@@ -26,6 +27,7 @@ func (dashboard Dashboard) Index(w http.ResponseWriter, r *http.Request, params 
 	// Verileri tutacak bir harita oluşturulur ve bu haritaya tüm gönderiler eklenir.
 	data := make(map[string]interface{})
 	data["posts"] = models.Post{}.GetAll()
+	data["Alert"] = helpers.GetAlert(w, r)
 	// HTML şablonunu ve verileri kullanarak sayfayı görüntüler.
 	view.ExecuteTemplate(w, "index", data)
 }
@@ -79,8 +81,10 @@ func (dashboard Dashboard) Add(w http.ResponseWriter, r *http.Request, params ht
 	}.Add()
 
 	// Kullanıcıyı yönlendirir ve ana sayfaya geri döner.
+
+	helpers.SetAlert(w, r, "Kayıt başarı ile eklendi")
 	http.Redirect(w, r, "/admin", http.StatusSeeOther)
-	// TODO: Bildirim gösterimi eklenebilir.
+
 }
 
 func (dashboard Dashboard) Delete(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
