@@ -187,6 +187,7 @@ func (dashboard Dashboard) Update(w http.ResponseWriter, r *http.Request, params
 		Picture_url: picture_url,
 	})
 
+	helpers.SetAlert(w, r, "Kayıt Güncellendi")
 	// Kullanıcıyı güncellenmiş gönderinin düzenleme sayfasına yönlendir.
-	http.Redirect(w, r, "/admin/edit/"+params.ByName("id"), http.StatusSeeOther)
+	http.Redirect(w, r, "/admin/", http.StatusSeeOther)
 }
