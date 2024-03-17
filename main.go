@@ -8,6 +8,7 @@ import (
 
 func main() {
 	admin_models.Post{}.Migrate()
+	admin_models.User{}.Migrate()
 	//post := admin_models.Post{}.Get(1)
 	//post.Updates(admin_models.Post{Title: "go ile web programlama", Description: "test", CategoryID: 23, Content: "23"})
 	//post.Update("slug", "web")

@@ -6,24 +6,23 @@ import (
 	"gorm.io/gorm"
 )
 
-type Post struct {
+type User struct {
 	gorm.Model
-	Title, Slug, Description, Content, Picture_url string
-	CategoryID                                     int
+	Username, Password string
 }
 
-func (post Post) Migrate() {
+func (user User) Migrate() {
 	db, err := gorm.Open(mysql.Open(Dns), &gorm.Config{})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	db.AutoMigrate(&post)
+	db.AutoMigrate(&user)
 
 }
 
-func (post Post) Add() { // db ye veri eklemek için
+func (user User) Add() { // db ye veri eklemek için
 
 	db, err := gorm.Open(mysql.Open(Dns), &gorm.Config{})
 	if err != nil {
@@ -31,22 +30,22 @@ func (post Post) Add() { // db ye veri eklemek için
 		return
 	}
 
-	db.AutoMigrate(&post)
-	db.Create(&post)
+	db.AutoMigrate(&user)
+	db.Create(&user)
 }
 
-func (post Post) Get(where ...interface{}) Post { // db den veri çekmek için  herhangi bir veri gelebilr
+func (user User) Get(where ...interface{}) User { // db den veri çekmek için  herhangi bir veri gelebilr
 	db, err := gorm.Open(mysql.Open(Dns), &gorm.Config{})
 	if err != nil {
 		fmt.Println(err)
-		return post
+		return user
 	}
-	db.First(&post, where...)
+	db.First(&user, where...)
 
-	return post
+	return user
 }
 
-func (post Post) GetAll(where ...interface{}) []Post { // tüm verileri çekecek
+func (user User) GetAll(where ...interface{}) []User { // tüm verileri çekecek
 
 	db, err := gorm.Open(mysql.Open(Dns), &gorm.Config{})
 	if err != nil {
@@ -54,37 +53,37 @@ func (post Post) GetAll(where ...interface{}) []Post { // tüm verileri çekecek
 
 		return nil
 	}
-	var posts []Post
-	db.Find(&posts, where...)
-	return posts
+	var users []User
+	db.Find(&users, where...)
+	return users
 }
 
-func (post Post) Update(colon string, value interface{}) {
+func (user User) Update(colon string, value interface{}) {
 
 	db, err := gorm.Open(mysql.Open(Dns), &gorm.Config{})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	db.Model(&post).Update(colon, value)
+	db.Model(&user).Update(colon, value)
 
 }
 
-func (post Post) Updates(data Post) {
+func (user User) Updates(data User) {
 
 	db, err := gorm.Open(mysql.Open(Dns), &gorm.Config{})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	db.Model(&post).Updates(data)
+	db.Model(&user).Updates(data)
 }
 
-func (post Post) Delete() {
+func (user User) Delete() {
 	db, err := gorm.Open(mysql.Open(Dns), &gorm.Config{})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	db.Delete(&post, post.ID)
+	db.Delete(&user, user.ID)
 }
