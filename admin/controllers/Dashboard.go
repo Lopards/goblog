@@ -17,7 +17,10 @@ import (
 type Dashboard struct{}
 
 func (dashboard Dashboard) Index(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	if !helpers.CheckUser(w, r) {
 
+		return
+	}
 	// Gösterilecek sayfanın HTML şablonunu yükler.
 	view, err := template.ParseFiles(helpers.Include("dashboard/list")...)
 	if err != nil {
@@ -33,6 +36,11 @@ func (dashboard Dashboard) Index(w http.ResponseWriter, r *http.Request, params 
 }
 
 func (dashboard Dashboard) NewItem(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+
+	if !helpers.CheckUser(w, r) {
+		return
+	}
+
 	// Yeni öğe ekleme sayfasının HTML şablonunu yükler.
 	view, err := template.ParseFiles(helpers.Include("dashboard/add")...)
 
@@ -44,6 +52,11 @@ func (dashboard Dashboard) NewItem(w http.ResponseWriter, r *http.Request, param
 }
 
 func (dashboard Dashboard) Add(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+
+	if !helpers.CheckUser(w, r) {
+		return
+	}
+
 	// Formdan gelen verileri alır.
 	title := r.FormValue("blog-title")
 	slug := slug2.Make(title)
@@ -88,6 +101,11 @@ func (dashboard Dashboard) Add(w http.ResponseWriter, r *http.Request, params ht
 }
 
 func (dashboard Dashboard) Delete(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+
+	if !helpers.CheckUser(w, r) {
+		return
+	}
+
 	// Silinecek gönderiyi alır ve veritabanından siler.
 	post := models.Post{}.Get(params.ByName("id"))
 	post.Delete()
@@ -98,6 +116,11 @@ func (dashboard Dashboard) Delete(w http.ResponseWriter, r *http.Request, params
 }
 
 func (dashboard Dashboard) Edit(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+
+	if !helpers.CheckUser(w, r) {
+		return
+	}
+
 	// Düzenlenecek gönderinin HTML şablonunu yükler.
 	view, err := template.ParseFiles(helpers.Include("dashboard/edit")...)
 	if err != nil {
@@ -112,6 +135,10 @@ func (dashboard Dashboard) Edit(w http.ResponseWriter, r *http.Request, params h
 }
 
 func (dashboard Dashboard) Update(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	if !helpers.CheckUser(w, r) {
+		return
+	}
+
 	// Güncellenecek gönderiyi veritabanından al.
 	post := models.Post{}.Get(params.ByName("id"))
 

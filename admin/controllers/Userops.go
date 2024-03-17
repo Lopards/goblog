@@ -43,3 +43,10 @@ func (userops Userops) Login(w http.ResponseWriter, r *http.Request, params http
 	}
 
 }
+
+func (userops Userops) Logout(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+
+	helpers.Logout(w, r)
+	helpers.SetAlert(w, r, "Çıkış yaptınız")
+	http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
+}
