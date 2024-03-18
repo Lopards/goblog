@@ -50,3 +50,36 @@ func (userops Userops) Logout(w http.ResponseWriter, r *http.Request, params htt
 	helpers.SetAlert(w, r, "Çıkış yaptınız")
 	http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
 }
+
+func (userops Userops) Register_index(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	view, err := template.ParseFiles(helpers.Include("userops/register")...)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	data := make(map[string]interface{})
+	data["Alert"] = helpers.GetAlert(w, r)
+	view.ExecuteTemplate(w, "register", data)
+}
+func (userops Userops) Register(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+
+	username := r.FormValue("username")
+	password := fmt.Sprintf("%x", sha256.Sum256([]byte(r.FormValue("password"))))
+	fmt.Println(username, password)
+	user := models.User{}.Get("username = ?", username)
+
+	if user.Username == username {
+		fmt.Println("Bu kullancııc adı kullanılmakta")
+		helpers.SetAlert(w, r, "Bu kullanıcı adı kullanılmakta Tekrar Deneyiniz")
+		http.Redirect(w, r, "/admin/register", http.StatusSeeOther)
+
+	} else {
+		models.User{
+			Username: username,
+			Password: password,
+		}.Add()
+		helpers.SetAlert(w, r, "Tekrar giriş yapınız")
+		http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
+	}
+
+}

@@ -22,6 +22,8 @@ func Routes() *httprouter.Router {
 	r.GET("/admin/login", admin.Userops{}.Index)
 	r.POST("/admin/do_login", admin.Userops{}.Login)
 	r.GET("/admin/logout", admin.Userops{}.Logout)
+	r.GET("/admin/register", admin.Userops{}.Register_index)
+	r.POST("/admin/do_register", admin.Userops{}.Register)
 	// serve files
 	r.ServeFiles("/admin/assets/*filepath", http.Dir("admin/assets"))
 	r.ServeFiles("/uploads/*filepath", http.Dir("uploads")) // blog sayfasındaki kapak görselini sitede göstermek için

@@ -28,7 +28,7 @@ func GetAlert(w http.ResponseWriter, r *http.Request) map[string]interface{} {
 
 	data := make(map[string]interface{})
 	flashes := session.Flashes()
-	fmt.Println(flashes)
+
 	if len(flashes) > 0 {
 		data["is_alert"] = true
 		data["message"] = flashes[0]
@@ -36,7 +36,7 @@ func GetAlert(w http.ResponseWriter, r *http.Request) map[string]interface{} {
 		data["is_alert"] = false
 		data["message"] = nil
 	}
-	fmt.Println(data)
+
 	session.Save(r, w)
 
 	return data
