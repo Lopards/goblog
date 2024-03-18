@@ -62,24 +62,24 @@ func (userops Userops) Register_index(w http.ResponseWriter, r *http.Request, pa
 	view.ExecuteTemplate(w, "register", data)
 }
 func (userops Userops) Register(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-
 	username := r.FormValue("username")
 	password := fmt.Sprintf("%x", sha256.Sum256([]byte(r.FormValue("password"))))
-	fmt.Println(username, password)
+
 	user := models.User{}.Get("username = ?", username)
 
 	if user.Username == username {
-		fmt.Println("Bu kullancııc adı kullanılmakta")
-		helpers.SetAlert(w, r, "Bu kullanıcı adı kullanılmakta Tekrar Deneyiniz")
+		fmt.Println("Bu kullanıcı adı kullanılmakta")
+		helpers.SetAlert(w, r, "Bu kullanıcı adı kullanılmakta. Lütfen başka bir kullanıcı adı deneyiniz.")
 		http.Redirect(w, r, "/admin/register", http.StatusSeeOther)
-
-	} else {
-		models.User{
-			Username: username,
-			Password: password,
-		}.Add()
-		helpers.SetAlert(w, r, "Tekrar giriş yapınız")
-		http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
+		return
 	}
 
+	models.User{
+		Username: username,
+		Password: password,
+	}.Add()
+
+	// Kayıt tamamlandıktan sonra boş bir index sayfası gösterilir
+	dashboard := Dashboard{}
+	dashboard.Index(w, r, params)
 }
