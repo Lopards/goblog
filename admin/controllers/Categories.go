@@ -37,3 +37,13 @@ func (categories Categories) Add(w http.ResponseWriter, r *http.Request, params 
 	helpers.SetAlert(w, r, "kayıt başarı ile eklendi")
 	http.Redirect(w, r, "/admin/kategoriler", http.StatusSeeOther)
 }
+
+func (categories Categories) Delete(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	// Silinecek gönderiyi alır ve veritabanından siler.
+	post := models.Category{}.Get(params.ByName("id"))
+	post.Delete()
+	// Kullanıcıyı yönlendirir ve ana sayfaya geri döner.
+	helpers.SetAlert(w, r, "kategori  silindi")
+
+	http.Redirect(w, r, "/admin/kategoriler", http.StatusSeeOther)
+}
