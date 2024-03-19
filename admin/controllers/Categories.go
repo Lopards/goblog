@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	slug2 "github.com/gosimple/slug"
 	"github.com/julienschmidt/httprouter"
 	"goblog/admin/helpers"
+	"goblog/admin/models"
 	"net/http"
 	"text/template"
 )
@@ -18,5 +20,20 @@ func (categories Categories) Index(w http.ResponseWriter, r *http.Request, param
 		fmt.Println(err)
 		return
 	}
-	view.ExecuteTemplate(w, "index", nil)
+	data := make(map[string]interface{})
+	data["Categories"] = models.Category{}.GetAll()
+	data["Alert"] = helpers.GetAlert(w, r)
+	view.ExecuteTemplate(w, "index", data)
+}
+
+func (categories Categories) Add(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	CategoyTitle := r.FormValue("category-title")
+	CategoySlug := slug2.Make(CategoyTitle)
+
+	models.Category{
+		Title: CategoyTitle,
+		Slug:  CategoySlug,
+	}.Add()
+	helpers.SetAlert(w, r, "kayıt başarı ile eklendi")
+	http.Redirect(w, r, "/admin/kategoriler", http.StatusSeeOther)
 }

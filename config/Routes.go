@@ -20,6 +20,7 @@ func Routes() *httprouter.Router {
 
 	//kategori
 	r.GET("/admin/kategoriler", admin.Categories{}.Index)
+	r.POST("/admin/kategoriler/add", admin.Categories{}.Add)
 	// User operasyınları
 	r.GET("/admin/login", admin.Userops{}.Index)
 	r.POST("/admin/do_login", admin.Userops{}.Login)
