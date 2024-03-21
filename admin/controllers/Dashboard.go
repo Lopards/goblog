@@ -21,8 +21,13 @@ func (dashboard Dashboard) Index(w http.ResponseWriter, r *http.Request, params 
 
 		return
 	}
+
 	// Gösterilecek sayfanın HTML şablonunu yükler.
-	view, err := template.New("index").Funcs(template.FuncMap{}).ParseFiles(helpers.Include("dashboard/list")...)
+	view, err := template.New("index").Funcs(template.FuncMap{
+		"getCategory": func(categoryID int) string {
+			return models.Category{}.Get(categoryID).Title
+		},
+	}).ParseFiles(helpers.Include("dashboard/list")...)
 	if err != nil {
 		fmt.Println(err)
 		return
