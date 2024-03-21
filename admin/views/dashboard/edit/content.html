@@ -16,8 +16,9 @@
   <div class="form-group">
     <label>Kategori</label>
     <select name="blog-category" class="form-control" >
+      {{ $categoryID := .post.CategoryID}}
       {{ range $index,$value := .Categories }}
-      <option value="{{ $value.ID }}">{{ $value.Title }}</option>
+      <option {{if eq $value.ID $categoryID}} selected {{end}} value="{{ $value.ID }}">{{ $value.Title }}</option>
       {{ end }}
     </select>
   </div>

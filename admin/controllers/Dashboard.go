@@ -22,7 +22,7 @@ func (dashboard Dashboard) Index(w http.ResponseWriter, r *http.Request, params 
 		return
 	}
 	// Gösterilecek sayfanın HTML şablonunu yükler.
-	view, err := template.ParseFiles(helpers.Include("dashboard/list")...)
+	view, err := template.New("index").Funcs(template.FuncMap{}).ParseFiles(helpers.Include("dashboard/list")...)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -47,8 +47,12 @@ func (dashboard Dashboard) NewItem(w http.ResponseWriter, r *http.Request, param
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	data := make(map[string]interface{})
+	data["Categories"] = models.Category{}.GetAll()
+
 	// HTML şablonunu görüntüler.
-	view.ExecuteTemplate(w, "index", nil)
+	view.ExecuteTemplate(w, "index", data)
 }
 
 func (dashboard Dashboard) Add(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
@@ -131,6 +135,7 @@ func (dashboard Dashboard) Edit(w http.ResponseWriter, r *http.Request, params h
 	// Düzenlenecek gönderiyi alır ve şablonla birlikte görüntüler.
 	data := make(map[string]interface{})
 	data["post"] = models.Post{}.Get(params.ByName("id"))
+	data["Categories"] = models.Category{}.GetAll()
 	view.ExecuteTemplate(w, "index", data)
 }
 
