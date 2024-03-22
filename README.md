@@ -1,6 +1,6 @@
 Go ile blog sayfası yapımı
 --
-dashboard
+Dashboard
 ![Ekran Görüntüsü (28)](https://github.com/Lopards/goblog/assets/101428835/5845b393-1af6-4413-8e79-fae8e90267d6)
 --
 Blog yazılarını editleme sayfası
